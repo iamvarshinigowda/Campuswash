@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+
+
+{% block content %}
+<form class="row" method="post" action="{% url 'login' %}">
+    {% csrf_token %}
+    <div class="mb-3">
+        <label for="email" class="form-label">Enter your email</label>
+        <input type="email" class="form-control" id="email" name="email" placeholder="Enter your email" required>
+    </div>
+    <div class="mb-3">
+        <label for="password" class="form-label">Password</label>
+        <input type="password" class="form-control" id="password" name="password" placeholder="Enter your password" required>
+    </div>
+    <div class="mb-3">
+        <label for="userType" class="form-label">Sign In As</label>
+        <select class="form-select" id="userType" name="userType" required>
+            <option value="">Select an option</option>
+            <option value="admin">Admin</option>
+            <option value="user">User</option>
+        </select>
+    </div>
+    <button type="submit" class="btn btn-primary w-100">Sign In</button>
+</form>
+
+
+{% endblock content %}

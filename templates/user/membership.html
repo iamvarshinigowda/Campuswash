@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+    <title>Membership Registration</title>
+    <script>
+        const isUserLoggedIn = {{ user.is_authenticated|yesno:"true,false" }};
+        
+        function checkLogin() {
+            if (!isUserLoggedIn) {
+                window.location.href = "{% url 'login' %}";
+            }
+        }
+
+        function updateValidity() {
+            if (!isUserLoggedIn) return; // Prevent unauthorized updates
+            const membershipType = document.getElementById("membership_type").value;
+            const validityDateField = document.getElementById("validity_date");
+
+            if (membershipType === "") {
+                validityDateField.innerText = "Select a membership type to see the validity date.";
+                return;
+            }
+
+            const currentDate = new Date();
+            const formattedStartDate = currentDate.toISOString().split("T")[0];
+            document.getElementById("start_date").value = formattedStartDate;
+
+            let validityDate;
+
+            if (membershipType === "6_months") {
+                validityDate = new Date(currentDate.setMonth(currentDate.getMonth() + 6));
+            } else if (membershipType === "12_months") {
+                validityDate = new Date(currentDate.setMonth(currentDate.getMonth() + 12));
+            }
+
+            const formattedValidityDate = validityDate.toISOString().split("T")[0];
+            validityDateField.innerText = `Membership Valid Until: ${formattedValidityDate}`;
+            document.getElementById("valid_until").value = formattedValidityDate;
+        }
+    </script>
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="text-center">Membership Registration</h1>
+        <form method="POST" action="{% url 'membership' %}">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="membership_type">Membership Type:</label>
+                <select class="form-control" id="membership_type" name="membership_type" onchange="updateValidity()" onfocus="checkLogin()" required>
+                    <option value="" disabled selected>Select membership type</option>
+                    <option value="6_months">6 Months - ₹2500</option>
+                    <option value="12_months">12 Months - ₹5000</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="start_date">Start Date:</label>
+                <input type="text" class="form-control" id="start_date" name="start_date" onfocus="checkLogin()" readonly>
+            </div>
+            <div class="form-group">
+                <p id="validity_date" class="text-info" onfocus="checkLogin()">
+                    Select a membership type to see the validity date.
+                </p>
+                <input type="hidden" id="valid_until" name="valid_until">
+            </div>
+            <button type="submit" class="btn btn-primary btn-block" onclick="checkLogin()">Submit</button>
+        </form>
+    </div>
+    <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+</body>
+</html>
