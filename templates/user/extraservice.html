@@ -1,0 +1,147 @@
+{% load static %}
+{% extends 'base.html' %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Extra Service Order</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-image: url("{% static 'images/laundryorderbackground.jpg' %}");
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+        .form-container {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            border-radius: 8px;
+            max-width: 600px;
+            margin: 50px auto;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+        }
+        .form-title {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .btn-group {
+            display: flex;
+            justify-content: space-between;
+        }
+        .message {
+            text-align: center;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="form-container">
+            <h2 class="form-title">Extra Service Order</h2>
+
+            <!-- Form -->
+            <form id="extraServiceForm" method="POST" action="{% url 'extraservice' %}">
+                {% csrf_token %}
+                <label for="extraService">Service Type:</label>
+                <select id="extraService" name="extraService" required>
+                    <option value="dry_cleaning">Dry Cleaning</option>
+                    <option value="ironing">Ironing</option>
+                    <option value="folding">Folding</option>
+                </select>
+
+                <label for="clothesCount">Clothes Count:</label>
+                <input type="number" id="clothesCount" name="clothesCount" required>
+                
+                <label for="totalAmount">Total Amount:</label>
+                <input type="number" id="totalAmount" name="totalAmount" readonly required>
+
+                <label for="paymentType">Payment Type:</label>
+                <select id="paymentType" name="paymentType" required>
+                    <option value="online">Online</option>
+                    <option value="card">Card</option>
+                    <option value="cash">Cash</option>
+                </select>
+
+                <button type="submit">Submit</button>
+            </form>
+
+            <!-- Success Message -->
+<div id="successMessage" class="message alert alert-success" style="display: none;">
+    <p>Order Placed Successfully! <br> 
+       Service Type: <span id="serviceTypeDisplay"></span> <br>
+       Total Amount: ₹<span id="totalAmountDisplay"></span> <br>
+       Payment Mode: <span id="paymentMethodDisplay"></span>.
+    </p>
+</div>
+</div>
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- JavaScript to handle calculation and form submission -->
+<script>
+    // Constants for price per cloth
+    const DRY_CLEANING_PRICE = 100;
+    const IRONING_PRICE = 12;
+    const FOLDING_PRICE = 3;
+
+    // Event listeners to update the total amount dynamically
+    document.getElementById('extraService').addEventListener('change', updateAmount);
+    document.getElementById('clothesCount').addEventListener('input', updateAmount);
+
+    function updateAmount() {
+        let service = document.getElementById('extraService').value;
+        let clothesCount = parseInt(document.getElementById('clothesCount').value);
+
+        if (!clothesCount || clothesCount <= 0) {
+            document.getElementById('totalAmount').value = '';
+            return;
+        }
+
+        let totalAmount = 0;
+
+        if (service === 'dry_cleaning') {
+            totalAmount = clothesCount * DRY_CLEANING_PRICE;
+        } else if (service === 'ironing') {
+            totalAmount = clothesCount * IRONING_PRICE;
+        } else if (service === 'folding') {
+            totalAmount = clothesCount * FOLDING_PRICE;
+        }
+
+        document.getElementById('totalAmount').value = totalAmount;
+    }
+
+    // Handle form submission
+    document.getElementById('extraServiceForm').addEventListener('submit', function(event) {
+        let serviceType = document.getElementById('extraService').value;
+        let totalAmount = document.getElementById('totalAmount').value;
+        let paymentType = document.getElementById('paymentType').value;
+
+        // Validate the fields
+        if (!totalAmount || !paymentType) {
+            alert('Please fill in all required fields.');
+            event.preventDefault(); // Stop submission if validation fails
+            return;
+        }
+
+        // Show the success message
+        document.getElementById('successMessage').style.display = 'block';
+        document.getElementById('serviceTypeDisplay').textContent = serviceType;
+        document.getElementById('totalAmountDisplay').textContent = totalAmount;
+        document.getElementById('paymentMethodDisplay').textContent = paymentType;
+
+        // Hide the success message after 5 seconds
+      // Hide the success message after 1 minute (60000 milliseconds)
+     setTimeout(function() {
+                document.getElementById('successMessage').style.display = 'none';
+            }, 60000);
+
+
+        // Allow form submission for saving data in the database
+    });
+</script>

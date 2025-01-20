@@ -1,25 +1,47 @@
 {% extends 'base.html' %}
 
 {% block content %}
-
 <div class="container">
-    <form class="row" method="post">
+    <form class="row" method="POST">
         {% csrf_token %}
         <div class="col-12 mb-5 fs-3 fw-bolder">
             Register to MyTODO
         </div>
+        
+        <!-- Register Number -->
         <div class="mb-3">
-            <label for="username" class="form-label">Username</label>
-            <input type="email" class="form-control" id="username" name="username" required>
+            <label for="register_number" class="form-label">Register Number</label>
+            <input type="text" class="form-control" id="register_number" name="register_number" required>
         </div>
+        
+        <!-- Full Name -->
+        <div class="mb-3">
+            <label for="name" class="form-label">Full Name</label>
+            <input type="text" class="form-control" id="name" name="name" required>
+        </div>
+        
+        <!-- Email -->
+        <div class="mb-3">
+            <label for="email" class="form-label">Email</label>
+            <input type="email" class="form-control" id="email" name="email" required>
+        </div>
+        
+        <!-- Phone Number -->
+        <div class="mb-3">
+            <label for="phone_number" class="form-label">Phone Number</label>
+            <input type="text" class="form-control" id="phone_number" name="phone_number" required>
+        </div>
+        
+        <!-- Password -->
         <div class="mb-3">
             <label for="password" class="form-label">Password</label>
             <input type="password" class="form-control" id="password" name="password" required>
         </div>
+        
+        <!-- Submit Button -->
         <div class="mb-3">
             <button type="submit" class="btn btn-primary">Register</button>
         </div>
     </form>
 </div>
-
 {% endblock content %}

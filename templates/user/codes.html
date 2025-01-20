@@ -1,0 +1,25 @@
+class laundry_Membership(models.Model):
+    MEMBERSHIP_CHOICES = [
+        ('6M', '6 Months'),
+        ('12M', '12 Months'),
+    ]
+
+    membership_id = models.AutoField(primary_key=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    payment = models.ForeignKey(laundry_Payments, on_delete=models.CASCADE)
+    membership_type = models.CharField(max_length=3, choices=MEMBERSHIP_CHOICES)
+    start_date = models.DateField()
+    valid_until = models.DateField()
+
+    def __str__(self):
+        return f"Membership ID: {self.membership_id}, Type: {self.get_membership_type_display()}"
+
+    def save(self, *args, **kwargs):
+        # Automatically calculate the valid_until date based on membership_type
+        from datetime import timedelta
+
+        if self.membership_type == '6M':
+            self.valid_until = self.start_date + timedelta(days=6 * 30)
+        elif self.membership_type == '12M':
+            self.valid_until = self.start_date + timedelta(days=12 * 30)
+        super().save(*args, **kwargs)

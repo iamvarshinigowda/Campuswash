@@ -69,16 +69,16 @@
             <a class="nav-link text-dark" href="#about">About</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link text-dark" href="http://127.0.0.1:8000/laundryorders">Laundry Order</a>
+            <a class="nav-link text-dark" href="{% url 'laundryorders' %}">Laundry Order</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link text-dark" href="#">Extra Services</a>
+            <a class="nav-link text-dark" href="{% url 'extraservice' %}">Extra Services</a>
           </li>
           <li class="nav-item">
             <a class="nav-link text-dark" href="#">Contact</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link text-dark" href="http://127.0.0.1:8000/feedback">Feedback</a>
+            <a class="nav-link text-dark" href="#">Feedback</a>
           </li>
           {% if user.is_authenticated %}
 <li class="nav-item">
@@ -147,16 +147,25 @@
     border-color: #0056b3;
   }
 </style>
-
+ {% if user.is_authenticated %}
+<section class="hero-section">
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <h1>Hello, {{ user.first_name }}! Welcome to Campus Wash Point</h1>
+    <p class="lead">Simplifying Laundry for Christ Campus - Reliable, Convenient, and Efficient!</p>
+    <a href="{% url 'membership' %}" class="btn btn-primary">Membership</a>
+  </div>
+</section>
+{% else %}
 <section class="hero-section">
   <div class="hero-overlay"></div>
   <div class="hero-content">
     <h1>Welcome to Campus Wash Point</h1>
     <p class="lead">Simplifying Laundry for Christ Campus - Reliable, Convenient, and Efficient!</p>
-    <p>If you need to take a membership, click the button below.</p>
-   <a href="http://127.0.0.1:8000/membership"> <button class="btn btn-primary" onclick="learnMore()">Membership</button></a>
+    <a href="{% url 'register' %}" class="btn btn-primary">signup</a>
   </div>
 </section>
+{% endif %}
 
   <!-- Main Content -->
   <main class="container my-5">

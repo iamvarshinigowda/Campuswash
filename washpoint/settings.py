@@ -49,6 +49,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
 ]
 
 ROOT_URLCONF = 'washpoint.urls'
@@ -103,7 +104,6 @@ AUTH_PASSWORD_VALIDATORS = [
 
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',  # This is the default, keep it if you want fallback behavior
-    'authapp.authentication.EmailBackend',  # Add your custom backend here
 ]
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
@@ -130,11 +130,4 @@ STATICFILES_DIRS = [
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-SESSION_ENGINE = 'django.contrib.sessions.backends.db'  # Store sessions in the database
-SESSION_COOKIE_NAME = 'sessionid'  # Default session cookie
-SESSION_EXPIRE_AT_BROWSER_CLOSE = False
 
-# Login and redirection settings
-LOGIN_URL = '/login/'  # Custom login page
-LOGIN_REDIRECT_URL = '/'  # Redirect to the home page after login
-LOGOUT_REDIRECT_URL = '/'  # Redirect to the home page after logout

@@ -1,4 +1,5 @@
 {% load static %}
+{% extends 'base.html' %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9,7 +10,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
-            background-image: url("{% static 'images/laundryorderbackground.jpg' %}"); /* Updated for Django static file usage */
+            background-image: url("{% static 'images/laundryorderbackground.jpg' %}");
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
@@ -18,8 +19,8 @@
             background: rgba(255, 255, 255, 0.9);
             padding: 20px;
             border-radius: 8px;
-            max-width: 600px;
-            margin: 50px auto;
+            max-width: 800px;
+            margin: 30px auto;
             box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
         }
         .form-title {
@@ -30,24 +31,46 @@
             display: flex;
             justify-content: space-between;
         }
+        .status-box {
+            background-color: #f8f9fa;
+            border: 1px solid #ddd;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            text-align: center;
+            font-weight: bold;
+        }
+        .table-container {
+            margin-top: 20px;
+        }
+        .table {
+            background: #fff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="form-container">
             <h2 class="form-title">Laundry Order</h2>
-            <form id="laundryOrderForm">
-                <!-- User ID (Register Number) -->
-                <div class="mb-3">
-                    <label for="userId" class="form-label">User ID (Register Number)</label>
-                    <input type="text" id="userId" name="userId" class="form-control" placeholder="Enter your register number" required>
-                </div>
 
-                <!-- Name -->
-                <div class="mb-3">
-                    <label for="name" class="form-label">Name</label>
-                    <input type="text" id="name" name="name" class="form-control" placeholder="Enter your name" required>
-                </div>
+            <!-- Display Current Status -->
+            <div class="status-box">
+                Current Status: 
+                <span class="text-primary">
+                    {% if status %}
+                        {{ status }}
+                    {% else %}
+                        Not Done
+                    {% endif %}
+                </span>
+            </div>
+
+            <!-- Laundry Order Form -->
+            <form id="laundryOrderForm" method="POST" action="{% url 'laundryorders' %}">
+                {% csrf_token %}
 
                 <!-- Clothes Count -->
                 <div class="mb-3">
@@ -65,18 +88,18 @@
                     </select>
                 </div>
 
-                <!-- Check-In Date -->
+                <!-- Check-In Date 
                 <div class="mb-3">
                     <label for="checkInDate" class="form-label">Check-In Date</label>
                     <input type="date" id="checkInDate" name="checkInDate" class="form-control" required>
                 </div>
 
-                <!-- Check-In Time -->
+                Check-In Time -->
                 <div class="mb-3">
                     <label for="checkInTime" class="form-label">Check-In Time</label>
                     <input type="time" id="checkInTime" name="checkInTime" class="form-control" required>
                 </div>
-
+-->
                 <!-- Buttons -->
                 <div class="btn-group">
                     <button type="submit" class="btn btn-primary">Submit</button>
@@ -85,6 +108,45 @@
                 </div>
             </form>
         </div>
+
+        <!-- Table to Display Laundry Orders -->
+        <div class="table-container">
+            <h3 class="form-title">Your Laundry Orders</h3>
+            <table class="table table-bordered table-striped">
+                <thead class="table-dark">
+                    <tr>
+                        <th>#</th>
+                        <th>Clothes Count</th>
+                        <th>Extras</th>
+                        <th>Check-In Date</th>
+                        <th>Check-In Time</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if orders %}
+                        {% for order in orders %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td>{{ order.clothes_count }}</td>
+                                <td>{{ order.extra_item|default:"None" }}</td>
+                                <td>{{ order.check_in_date }}</td>
+                                <td>{{ order.check_in_time }}</td>
+                                <td>
+                                    <span class="badge {% if order.status == 'Done' %}bg-success{% else %}bg-warning{% endif %}">
+                                        {{ order.status }}
+                                    </span>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="6" class="text-center">No orders found</td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
     </div>
 
     <!-- Bootstrap JS -->
@@ -92,10 +154,9 @@
 
     <!-- JavaScript -->
     <script>
-        // Handle form submission
+        // Handle form submission (for client-side validation and feedback)
         document.getElementById('laundryOrderForm').addEventListener('submit', function(event) {
-            event.preventDefault(); // Prevent form from refreshing the page
-            alert('Laundry order submitted successfully!');
+            alert('Laundry order submitted successfully! If you do not see changes, check with admin.');
         });
     </script>
 </body>

@@ -1,13 +1,15 @@
 from django.urls import path
-from django.contrib.auth.views import LoginView, LogoutView
-from .views import home, laundryorders, feedback, payment, membership
+from django.contrib.auth.decorators import login_required
+from .views import home, laundryorders, payment, create_membership, user_logout, extra_service_view,feedback_view
+from django.contrib.auth.views import LoginView
 
 urlpatterns = [
     path('', home, name='home'),  # Main app home
     path('laundryorders', laundryorders, name='laundryorders'),
-    path('feedback', feedback, name='feedback'),
+    path('feedback',feedback_view , name='feedback'),
     path('payment', payment, name='payment'),
-    path('membership', membership, name='membership'),
+    path('membership', create_membership, name='membership'),
+    path('extraservice',extra_service_view, name='extraservice'),
     path('login/', LoginView.as_view(template_name='authenticate/login.html'), name='login'),  # Login page
-    path('logout/', LogoutView.as_view(), name='logout'),  # Logout page
+    path('logout/', user_logout, name='logout'),  # Logout page
 ]
