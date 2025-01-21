@@ -5,7 +5,7 @@ from .models import laundry_Payments,laundry_Membership
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from .models import laundry_Membership, LaundryOrders ,ExtraService,Feedback
+from .models import laundry_Membership, LaundryOrders ,ExtraService,Feedback,User
 
 def home(request):
     return render(request, 'user/home.html')  # Render the home page.
@@ -27,6 +27,12 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from .models import LaundryOrders, laundry_Membership
 
+from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from datetime import datetime
+from .models import LaundryOrders, laundry_Membership
+
 @login_required
 def laundryorders(request):
     try:
@@ -39,25 +45,10 @@ def laundryorders(request):
                 # Get form data
                 clothes_count = request.POST.get('clothesCount')
                 extra_item = request.POST.get('extras', '')
-                check_in_date = request.POST.get('checkInDate')
-                check_in_time = request.POST.get('checkInTime')
 
                 # Validate clothes count
                 if not clothes_count or not clothes_count.isdigit() or int(clothes_count) <= 0:
                     messages.error(request, "Please provide a valid number of clothes.")
-                    return render(request, 'user/laundryorders.html')
-
-                # Validate and parse check-in date and time
-                try:
-                    check_in_date = datetime.strptime(check_in_date, "%Y-%m-%d").date()
-                except (ValueError, TypeError):
-                    messages.error(request, "Please provide a valid check-in date.")
-                    return render(request, 'user/laundryorders.html')
-
-                try:
-                    check_in_time = datetime.strptime(check_in_time, "%H:%M").time()
-                except (ValueError, TypeError):
-                    messages.error(request, "Please provide a valid check-in time.")
                     return render(request, 'user/laundryorders.html')
 
                 # Save the laundry order to the database
@@ -66,16 +57,17 @@ def laundryorders(request):
                     membership=membership,
                     clothes_count=int(clothes_count),
                     extra_item=extra_item,
-                    check_in_date=check_in_date,
-                    check_in_time=check_in_time,
                 )
 
                 # Success message and redirect
                 messages.success(request, "Laundry order submitted successfully!")
                 return redirect('home')
 
-            # Render the form if the request is GET
-            return render(request, 'user/laundryorders.html')
+            # Retrieve user's laundry orders
+            orders = LaundryOrders.objects.filter(user=request.user)
+
+            # Render the form and orders
+            return render(request, 'user/laundryorders.html', {'orders': orders})
 
         else:
             # Redirect to membership renewal if expired
@@ -86,13 +78,6 @@ def laundryorders(request):
         # Handle case where user has no membership
         messages.warning(request, "No active membership found. Please subscribe to a membership first.")
         return redirect('membership')
-
- 
-
-
-
-
-
 
 
 
@@ -255,3 +240,32 @@ def feedback_view(request):
         return redirect("feedback")
 
     return render(request, "user/feedback.html")
+
+def admin_dash(request):
+     # Calculate the total users (assuming you have a User model)
+    total_users = User.objects.count()
+    
+    # Calculate the total orders and pending orders
+    total_orders = LaundryOrders.objects.count()
+    pending_orders = LaundryOrders.objects.filter(status='Not Done').count()
+    
+    # Calculate total memberships and breakdown by membership type
+    total_memberships = laundry_Membership.objects.count()
+    six_month_memberships = laundry_Membership.objects.filter(membership_type='6 months').count()
+    twelve_month_memberships = laundry_Membership.objects.filter(membership_type='12 months').count()
+    
+    # Get all laundry orders for display
+    orders = LaundryOrders.objects.all()
+    
+    # Pass these values to the template
+    context = {
+        'total_users': total_users,
+        'total_orders': total_orders,
+        'pending_orders': pending_orders,
+        'total_memberships': total_memberships,
+        'six_month_memberships': six_month_memberships,
+        'twelve_month_memberships': twelve_month_memberships,
+        'orders': orders,  # Adding orders to the context
+    }
+    
+    return render(request, 'admin/index.html', context)

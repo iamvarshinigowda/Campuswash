@@ -1,3 +1,4 @@
+from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.models import User
@@ -28,15 +29,14 @@ def user_login(request):
         username= request.POST['username']
         password= request.POST['password']
         user = authenticate(username=username, password=password)
+        print('User logged in', user)
         if user is not None:
-            if user.is_active:
-                login(request, user)
-                if user.is_superuser:
-                    return redirect('admin')
-                else:
-                    return redirect('home')  
+            print(user)
+            login(request, user)
+            if user.is_superuser:
+                return redirect('admin_dash')
             else:
-                return redirect('login')
+                return redirect('home')  
         else:
             return redirect('login')
     else:

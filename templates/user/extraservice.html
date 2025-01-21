@@ -1,5 +1,6 @@
-{% load static %}
 {% extends 'base.html' %}
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -38,6 +39,7 @@
         }
     </style>
 </head>
+{% block content %}
 <body>
     <div class="container">
         <div class="form-container">
@@ -145,3 +147,4 @@
         // Allow form submission for saving data in the database
     });
 </script>
+{% endblock content %}

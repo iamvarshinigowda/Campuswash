@@ -91,6 +91,9 @@ class LaundryOrders(models.Model):
 
 
 
+from django.db import models
+from django.contrib.auth.models import User
+
 class ExtraService(models.Model):
     EXTRA_SERVICE_CHOICES = [
         ('dry_cleaning', 'Dry Cleaning'),
@@ -113,7 +116,8 @@ class ExtraService(models.Model):
     date_requested = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.user.username} - {self.extra_service_type} ({self.date_requested})"
+        # Fix field name in the __str__ method
+        return f"{self.user.username} - {self.extraService} ({self.date_requested})"
 
     def calculate_amount(self):
         """
@@ -124,10 +128,7 @@ class ExtraService(models.Model):
             'ironing': 12,
             'folding': 3,
         }
-        return rates[self.extra_service_type] * self.clothes_count
-
-
-
+        return rates[self.extraService] * self.clothesCount
 
     
     from django.db import models

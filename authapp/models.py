@@ -6,4 +6,6 @@ class UserProfile(models.Model):
     phone_number = models.CharField(max_length=15, blank=False, null=False)  # Additional validation recommended
 
     def __str__(self):
-        return f"{self.name} ({self.register_number})"
+        # Use an existing field or the related user's username or first/last name
+        return f"{self.user.username} ({self.phone_number})"  # Example
+

@@ -1,0 +1,301 @@
+{% block content %}
+<div class="dashboard">
+    <h1>Campus Wash Point Admin Dashboard</h1>
+
+    <!-- Stats Section -->
+    <div class="stats">
+        <div class="stat">
+            <h3>Total Users</h3>
+            <p>{{ total_users }}</p>
+            <button onclick="location.href='/admin/auth/user/'">View Users</button>
+        </div>
+        <div class="stat">
+            <h3>Total Orders</h3>
+            <p>{{ total_orders }}</p>
+            <button onclick="location.href='/admin/campuswashapp/laundryorders/'">View Orders</button>
+        </div>
+        <div class="stat">
+            <h3>Total Memberships</h3>
+            <p>{{ total_memberships }}</p>
+            <button onclick="location.href='/admin/campuswashapp/laundry_membership/'">View Memberships</button>
+        </div>
+        <div class="stat">
+            <h3>Pending Orders</h3>
+            <p>{{ pending_orders }}</p>
+            <button onclick="location.href='/admin/campuswashapp/laundryorders/?status=Not+Done'">View Pending</button>
+        </div>
+    </div>
+
+    <!-- Membership Breakdown Section 
+    <div class="membership-breakdown">
+        <h2>Membership Breakdown</h2>
+        <div class="membership-stats">
+            <div class="membership-card">
+                <h3>6-Month Memberships</h3>
+                <p>{{ six_month_memberships }}</p>
+            </div>
+            <div class="membership-card">
+                <h3>12-Month Memberships</h3>
+                <p>{{ twelve_month_memberships }}</p>  
+            </div>
+        </div>
+    </div>-->
+    
+        <!-- <div class="chart-container">
+            <h4>Membership Distribution</h4>
+            <canvas id="membershipChart"></canvas>
+        </div>
+    </div> -->
+
+    <!-- Orders Chart Section -->
+    <!-- <div class="orders-section">
+        <h2>Orders Overview</h2>
+        <div class="chart-container">
+            <canvas id="ordersChart"></canvas>
+        </div>
+    </div> -->
+</div>
+<div class="orders-table">
+    <h2>All Orders Overview</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Order ID</th>
+                <th>User Name</th>
+                <th>Clothes Count</th>
+                <th>Extras</th>
+                <th>Status</th>
+                <th>Check-in Date</th>
+                <th>Check-out Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for order in orders %}
+            <tr>
+                <td>{{ order.laundry_id }}</td>
+                <td>{{ order.user.first_name }} {{ order.user.last_name }}</td>  <!-- Assuming a User model with first and last name -->
+                <td>{{ order.clothes_count }}</td>
+                <td>{{ order.extra_item }}</td>  <!-- Displaying the extra services -->
+                <td>{{ order.status }}</td>  <!-- Displaying the status of the order -->
+                <td>{{ order.check_in_date }}</td>
+                <td>{{ order.check_out_date }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="7">No orders available</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+<!-- Add Styling -->
+<style>
+    /* General Dashboard Styling */
+    .dashboard {
+        margin: 20px;
+        font-family: Arial, sans-serif;
+    }
+
+    h1 {
+        color: #333;
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    h2 {
+        color: #555;
+        text-align: center;
+        margin-top: 30px;
+        margin-bottom: 15px;
+    }
+
+    /* Statistics Cards */
+    .stats {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        justify-content: center;
+    }
+
+    .stat {
+        background: linear-gradient(135deg, #72c6ef, #004e92);
+        color: white;
+        padding: 20px;
+        border-radius: 12px;
+        text-align: center;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .stat:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 6px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .stat h3 {
+        margin-bottom: 10px;
+        font-size: 1.5em;
+    }
+
+    .stat p {
+        font-size: 1.2em;
+        font-weight: bold;
+        margin: 5px 0 15px;
+    }
+
+    .stat button {
+        background-color: #fff;
+        color: #004e92;
+        border: none;
+        padding: 10px 15px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: bold;
+        font-size: 0.9em;
+        transition: background-color 0.3s ease, transform 0.3s ease;
+    }
+
+    .stat button:hover {
+        background-color: #004e92;
+        color: white;
+        transform: scale(1.05);
+    }
+
+    /* Membership Section */
+    .membership-breakdown {
+        margin-top: 30px;
+    }
+
+    .membership-stats {
+        display: flex;
+        gap: 20px;
+        justify-content: center;
+        margin-bottom: 20px;
+    }
+
+    .membership-card {
+        background: #f8f9fa;
+        color: #333;
+        padding: 20px;
+        border-radius: 12px;
+        text-align: center;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .chart-container {
+        width: 100%;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+    canvas {
+        max-width: 100%;
+    }
+
+    /* Orders Section */
+    .orders-section {
+        margin-top: 40px;
+    }
+
+
+
+    
+    /* Orders Table Styling */
+    .orders-table {
+        margin-top: 40px;
+        text-align: center;
+    }
+
+    .orders-table table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+    }
+
+    .orders-table th, .orders-table td {
+        padding: 12px;
+        border: 1px solid #ddd;
+        text-align: center;
+    }
+
+    .orders-table th {
+        background-color: #004e92;
+        color: white;
+        font-size: 1.2em;
+    }
+
+    .orders-table td {
+        background-color: #f8f9fa;
+    }
+
+    .orders-table tr:nth-child(even) {
+        background-color: #f2f2f2;
+    }
+
+    .orders-table tr:hover {
+        background-color: #ddd;
+    }
+
+    .orders-table td[colspan="7"] {
+        font-weight: bold;
+    }
+
+
+
+
+</style>
+{% endblock content %}
+<!-- Add Dynamic Chart Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Membership Distribution Chart
+    const membershipCtx = document.getElementById('membershipChart').getContext('2d');
+    new Chart(membershipCtx, {
+        type: 'pie',
+        data: {
+            labels: ['6-Month Memberships', '12-Month Memberships'],
+            datasets: [{
+                data: [{{ six_month_memberships }}, {{ twelve_month_memberships }}],
+                backgroundColor: ['#4caf50', '#ff9800'],
+                hoverOffset: 4
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { position: 'top' },
+                title: { display: true, text: 'Membership Distribution' }
+            }
+        }
+    });
+
+    // Orders Overview Chart
+    const ordersCtx = document.getElementById('ordersChart').getContext('2d');
+    new Chart(ordersCtx, {
+        type: 'bar',
+        data: {
+            labels: ['Total Orders', 'Pending Orders'],
+            datasets: [{
+                label: 'Order Statistics',
+                data: [{{ total_orders }}, {{ pending_orders }}],
+                backgroundColor: ['#3f51b5', '#e91e63'],
+                borderColor: ['#283593', '#ad1457'],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: { display: true, text: 'Number of Orders' }
+                }
+            },
+            plugins: {
+                legend: { display: false },
+                title: { display: true, text: 'Orders Overview' }
+            }
+        }
+    });
+

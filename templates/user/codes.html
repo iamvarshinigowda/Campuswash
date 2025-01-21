@@ -23,3 +23,271 @@ class laundry_Membership(models.Model):
         elif self.membership_type == '12M':
             self.valid_until = self.start_date + timedelta(days=12 * 30)
         super().save(*args, **kwargs)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <!-- Bootstrap 5 CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+</head>
+
+<body>
+    <div class="container my-5">
+        <!-- Dashboard Header -->
+        <div class="row mb-4">
+            <div class="col-12 text-center">
+                <h1 class="display-4">Admin Dashboard</h1>
+                <p class="text-muted">Overview of system performance and revenue</p>
+            </div>
+        </div>
+
+        <!-- Metrics Overview Section -->
+        <div class="row g-4">
+            <!-- Total Users -->
+            <div class="col-md-3">
+                <div class="card text-center shadow-sm border-0">
+                    <div class="card-body">
+                        <h5 class="card-title text-primary">Total Users</h5>
+                        <h2 class="fw-bold">{{ total_users }}</h2>
+                        <p class="text-muted">Active users in the system</p>
+                    </div>
+                </div>
+            </div>
+            <!-- Total Orders -->
+            <div class="col-md-3">
+                <div class="card text-center shadow-sm border-0">
+                    <div class="card-body">
+                        <h5 class="card-title text-success">Total Orders</h5>
+                        <h2 class="fw-bold">{{ total_orders }}</h2>
+                        <p class="text-muted">Laundry orders submitted</p>
+                    </div>
+                </div>
+            </div>
+            <!-- Pending Orders -->
+            <div class="col-md-3">
+                <div class="card text-center shadow-sm border-0">
+                    <div class="card-body">
+                        <h5 class="card-title text-warning">Pending Orders</h5>
+                        <h2 class="fw-bold">{{ pending_orders }}</h2>
+                        <p class="text-muted">Orders awaiting completion</p>
+                    </div>
+                </div>
+            </div>
+            <!-- Total Revenue -->
+            <div class="col-md-3">
+                <div class="card text-center shadow-sm border-0">
+                    <div class="card-body">
+                        <h5 class="card-title text-danger">Total Revenue</h5>
+                        <h2 class="fw-bold">Rs.{{ total_revenue }}</h2>
+                        <p class="text-muted">Revenue collected</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Memberships Section -->
+        <div class="row g-4 my-4">
+            <!-- Total Memberships -->
+            <div class="col-md-4">
+                <div class="card text-center shadow-sm border-0">
+                    <div class="card-body">
+                        <h5 class="card-title text-info">Total Memberships</h5>
+                        <h2 class="fw-bold">{{ total_memberships }}</h2>
+                        <p class="text-muted">Active memberships</p>
+                    </div>
+                </div>
+            </div>
+            <!-- 6-Month Memberships -->
+            <div class="col-md-4">
+                <div class="card text-center shadow-sm border-0">
+                    <div class="card-body">
+                        <h5 class="card-title text-secondary">6-Month Memberships</h5>
+                        <h2 class="fw-bold">{{ six_month_memberships }}</h2>
+                        <p class="text-muted">Users on 6-month plans</p>
+                    </div>
+                </div>
+            </div>
+            <!-- 12-Month Memberships -->
+            <div class="col-md-4">
+                <div class="card text-center shadow-sm border-0">
+                    <div class="card-body">
+                        <h5 class="card-title text-primary">12-Month Memberships</h5>
+                        <h2 class="fw-bold">{{ twelve_month_memberships }}</h2>
+                        <p class="text-muted">Users on 12-month plans</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Revenue Breakdown Section -->
+        <div class="row g-4 my-4">
+            <div class="col-md-6">
+                <div class="card shadow-sm border-0">
+                    <div class="card-body">
+                        <h5 class="card-title">Revenue Breakdown</h5>
+                        <ul class="list-group">
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                Orders Revenue
+                                <span class="fw-bold">Rs.{{ revenue_breakdown.orders }}</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                Services Revenue
+                                <span class="fw-bold">Rs.{{ revenue_breakdown.services }}</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Orders Table -->
+            <div class="col-md-6">
+                <div class="card shadow-sm border-0">
+                    <div class="card-body">
+                        <h5 class="card-title">Recent Orders</h5>
+                        <table class="table table-hover">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>#</th>
+                                    <th>Customer</th>
+                                    <th>Order Date</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for order in orders %}
+                                <tr>
+                                    <td>{{ order.id }}</td>
+                                    <td>{{ order.customer_name }}</td>
+                                    <td>{{ order.order_date }}</td>
+                                    <td>{{ order.status }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
+
+{% endblock content %}
+
+<!-- Add Dynamic Chart Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Membership Distribution Chart
+    const membershipCtx = document.getElementById('membershipChart').getContext('2d');
+    new Chart(membershipCtx, {
+        type: 'pie',
+        data: {
+            labels: ['6-Month Memberships', '12-Month Memberships'],
+            datasets: [{
+                data: [{{ six_month_memberships }}, {{ twelve_month_memberships }}],
+                backgroundColor: ['#4caf50', '#ff9800'],
+                hoverOffset: 4
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { position: 'top' },
+                title: { display: true, text: 'Membership Distribution' }
+            }
+        }
+    });
+
+    // Orders Overview Chart
+    const ordersCtx = document.getElementById('ordersChart').getContext('2d');
+    new Chart(ordersCtx, {
+        type: 'bar',
+        data: {
+            labels: ['Total Orders', 'Pending Orders'],
+            datasets: [{
+                label: 'Order Statistics',
+                data: [{{ total_orders }}, {{ pending_orders }}],
+                backgroundColor: ['#3f51b5', '#e91e63'],
+                borderColor: ['#283593', '#ad1457'],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: { display: true, text: 'Number of Orders' }
+                }
+            },
+            plugins: {
+                legend: { display: false },
+                title: { display: true, text: 'Orders Overview' }
+            }
+        }
+    });
+
+# Calculate the total users
+    total_users = User.objects.count()
+
+    # Calculate the total orders and pending orders
+    total_orders = LaundryOrders.objects.count()
+    pending_orders = LaundryOrders.objects.filter(status='Not Done').count()
+
+    # Calculate total memberships and breakdown by membership type
+    total_memberships = laundry_Membership.objects.count()
+    six_month_memberships = laundry_Membership.objects.filter(membership_type='6 months').count()
+    twelve_month_memberships = laundry_Membership.objects.filter(membership_type='12 months').count()
+
+    # Get all laundry orders for display
+    orders = LaundryOrders.objects.all()
+
+    # Calculate total revenue from payments
+    total_revenue = laundry_Payments.objects.aggregate(total=Sum('amount'))['total'] or 0
+
+    # Get the recent payments (last 5 payments)
+    recent_payments = laundry_Payments.objects.order_by('-payment_date')[:5]
+
+    # Calculate revenue breakdown
+    revenue_breakdown = {
+    'orders': laundry_Payments.objects.filter(payment_for='ORDERS').aggregate(total=Sum('amount'))['total'] or 0,
+    'services': laundry_Payments.objects.filter(payment_for='SERVICES').aggregate(total=Sum('amount'))['total'] or 0,
+}
+    # Pass these values to the template
+    context = {
+        'total_users': total_users,
+        'total_orders': total_orders,
+        'pending_orders': pending_orders,
+        'total_memberships': total_memberships,
+        'six_month_memberships': six_month_memberships,
+        'twelve_month_memberships': twelve_month_memberships,
+        'orders': orders,
+        'total_revenue': total_revenue,
+        'recent_payments': recent_payments,
+        'revenue_breakdown': revenue_breakdown,
+    }
+
+    return render(request, 'admin/index.html', context)
