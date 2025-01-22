@@ -1,11 +1,14 @@
 from django.shortcuts import render, redirect
 from datetime import datetime, timedelta,date
+
+from authapp import models
 from .decorators import membership_required 
 from .models import laundry_Payments,laundry_Membership 
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from .models import laundry_Membership, LaundryOrders ,ExtraService,Feedback,User
+from .models import laundry_Membership, LaundryOrders ,ExtraService,Feedback,User,laundry_Payments
+from django.db.models import Sum
 
 def home(request):
     return render(request, 'user/home.html')  # Render the home page.
@@ -33,6 +36,21 @@ from django.contrib import messages
 from datetime import datetime
 from .models import LaundryOrders, laundry_Membership
 
+
+from datetime import datetime, timedelta
+from django.db import IntegrityError
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from .models import LaundryOrders, laundry_Membership
+
+from datetime import datetime, timedelta
+from django.db import IntegrityError
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from .models import LaundryOrders, laundry_Membership
+
 @login_required
 def laundryorders(request):
     try:
@@ -51,20 +69,38 @@ def laundryorders(request):
                     messages.error(request, "Please provide a valid number of clothes.")
                     return render(request, 'user/laundryorders.html')
 
-                # Save the laundry order to the database
-                LaundryOrders.objects.create(
+                # Check for submission limits (2 per week)
+                start_of_week = datetime.now().date() - timedelta(days=datetime.now().weekday())
+                weekly_orders = LaundryOrders.objects.filter(
                     user=request.user,
-                    membership=membership,
-                    clothes_count=int(clothes_count),
-                    extra_item=extra_item,
-                )
+                    check_in_date__gte=start_of_week  # Use check_in_date instead of created_at
+                ).count()
 
-                # Success message and redirect
-                messages.success(request, "Laundry order submitted successfully!")
-                return redirect('home')
+                if weekly_orders >= 2:
+                    messages.error(request, "You can only submit up to 2 laundry orders per week.")
+                    orders = LaundryOrders.objects.filter(user=request.user)
+                    return render(request, 'user/laundryorders.html', {'orders': orders})
+
+                # Save the laundry order to the database
+                try:
+                    LaundryOrders.objects.create(
+                        user=request.user,
+                        membership=membership,
+                        clothes_count=int(clothes_count),
+                        extra_item=extra_item,
+                    )
+                    messages.success(request, "Laundry order submitted successfully!")
+                    return redirect('home')
+                except IntegrityError:
+                    messages.error(request, "An error occurred while submitting your laundry order. Please try again.")
+                    return render(request, 'user/laundryorders.html')
 
             # Retrieve user's laundry orders
-            orders = LaundryOrders.objects.filter(user=request.user)
+            orders = LaundryOrders.objects.filter(user=request.user).select_related('membership')
+
+            # Feedback for empty order history
+            if not orders.exists():
+                messages.info(request, "You have no laundry orders yet. Submit one now!")
 
             # Render the form and orders
             return render(request, 'user/laundryorders.html', {'orders': orders})
@@ -78,7 +114,6 @@ def laundryorders(request):
         # Handle case where user has no membership
         messages.warning(request, "No active membership found. Please subscribe to a membership first.")
         return redirect('membership')
-
 
 
 @login_required
@@ -253,6 +288,11 @@ def admin_dash(request):
     total_memberships = laundry_Membership.objects.count()
     six_month_memberships = laundry_Membership.objects.filter(membership_type='6 months').count()
     twelve_month_memberships = laundry_Membership.objects.filter(membership_type='12 months').count()
+    # Calculate revenue generated from memberships
+    # Calculate revenue generated from memberships
+    # Calculate revenue generated from memberships
+    membership_revenue = laundry_Payments.objects.filter(payment_for='MEMBERSHIP').aggregate(total=Sum('amount'))['total'] or 0
+
     
     # Get all laundry orders for display
     orders = LaundryOrders.objects.all()
@@ -266,6 +306,7 @@ def admin_dash(request):
         'six_month_memberships': six_month_memberships,
         'twelve_month_memberships': twelve_month_memberships,
         'orders': orders,  # Adding orders to the context
+        'membership_revenue': membership_revenue,
     }
     
     return render(request, 'admin/index.html', context)
