@@ -178,7 +178,7 @@ def extra_service_view(request):
         clothes_count = request.POST.get('clothesCount')  # Matches 'clothesCount' in model
         total_amount = request.POST.get('totalAmount') # Matches 'totalAmount' in model 
         payment_type = request.POST.get('paymentType')  # Matches 'paymentType' in model
-
+        
         # Validate form data
         if not extra_service_type or not clothes_count or not payment_type:
             messages.error(request, "Please fill in all fields.")
@@ -215,11 +215,19 @@ def extra_service_view(request):
             paymentType=payment_type
         )
         extra_service.save()
+        
 
         # Success message and redirect
         messages.success(request, f"Order placed successfully! Total Amount: ₹{total_amount}")
         return redirect('extraservice')  # Redirect to the same page or another page
+# Fetch existing extra service records for the user
+    extra_services = ExtraService.objects.filter(user=request.user).order_by('-date_requested')
 
+    # Pass records to the template
+    context = {
+        'extra_services': extra_services,
+    }
+    return render(request, 'user/extraservice.html', context)
     # Render the form template
     return render(request, 'user/extraservice.html')
 
@@ -276,8 +284,14 @@ def feedback_view(request):
 
     return render(request, "user/feedback.html")
 
+from django.db.models import Sum
+
+from django.db.models import Sum
+from django.shortcuts import render
+from .models import User, LaundryOrders, laundry_Membership, laundry_Payments, ExtraService
+
 def admin_dash(request):
-     # Calculate the total users (assuming you have a User model)
+    # Calculate the total users
     total_users = User.objects.count()
     
     # Calculate the total orders and pending orders
@@ -288,16 +302,21 @@ def admin_dash(request):
     total_memberships = laundry_Membership.objects.count()
     six_month_memberships = laundry_Membership.objects.filter(membership_type='6 months').count()
     twelve_month_memberships = laundry_Membership.objects.filter(membership_type='12 months').count()
+    
     # Calculate revenue generated from memberships
-    # Calculate revenue generated from memberships
-    # Calculate revenue generated from memberships
-    membership_revenue = laundry_Payments.objects.filter(payment_for='MEMBERSHIP').aggregate(total=Sum('amount'))['total'] or 0
-
+    membership_revenue = (
+        laundry_Payments.objects
+        .filter(payment_for='membership')
+        .aggregate(total=Sum('amount'))['total'] or 0
+    )
     
     # Get all laundry orders for display
     orders = LaundryOrders.objects.all()
     
-    # Pass these values to the template
+    # Fetch all extra services
+    extra_services = ExtraService.objects.all().order_by('-date_requested')
+    
+    # Combine all data into a single context
     context = {
         'total_users': total_users,
         'total_orders': total_orders,
@@ -307,6 +326,8 @@ def admin_dash(request):
         'twelve_month_memberships': twelve_month_memberships,
         'orders': orders,  # Adding orders to the context
         'membership_revenue': membership_revenue,
+        'extra_services': extra_services,  # Including extra services in the context
     }
     
+    # Render the template
     return render(request, 'admin/index.html', context)

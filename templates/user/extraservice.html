@@ -71,6 +71,39 @@
                 <button type="submit">Submit</button>
             </form>
 
+        <!-- Extra Services Table -->
+        <div class="mt-5">
+            <h3>Your Service History</h3>
+            <table class="table table-bordered table-striped mt-3">
+                <thead class="table-dark">
+                    <tr>
+                        <th>#</th>
+                        <th>Service</th>
+                        <th>Clothes Count</th>
+                        <th>Total Amount (₹)</th>
+                        <th>Payment Type</th>
+                        <th>Date Requested</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for service in extra_services %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ service.get_extraService_display }}</td>
+                        <td>{{ service.clothesCount }}</td>
+                        <td>{{ service.totalAmount }}</td>
+                        <td>{{ service.get_paymentType_display }}</td>
+                        <td>{{ service.date_requested|date:"Y-m-d H:i" }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center">No extra services found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
             <!-- Success Message -->
 <div id="successMessage" class="message alert alert-success" style="display: none;">
     <p>Order Placed Successfully! <br> 
