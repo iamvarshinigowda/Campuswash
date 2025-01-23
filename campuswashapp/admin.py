@@ -1,6 +1,6 @@
 from datetime import timezone
 from django.contrib import admin
-from .models import LaundryOrders, laundry_Membership, laundry_Payments, ExtraService
+from .models import LaundryOrders, laundry_Membership, laundry_Payments, ExtraService,Feedback
 
 from .utils import send_status_update_email
 # Admin for Laundry Orders
@@ -64,9 +64,24 @@ class ExtraServiceAdmin(admin.ModelAdmin):
     def save_model(self, request, obj, form, change):
         obj.totalAmount = obj.calculate_amount()  # Auto-calculate amount based on clothes count and service type
         super().save_model(request, obj, form, change)
+class LaundryFeedbackAdmin(admin.ModelAdmin):
+    list_display = ('feedback_id', 'user', 'feedback_type', 'rating', 'short_message')  # Customize columns
+    list_filter = ('feedback_type', 'rating')  # Add filtering options
+    search_fields = ('user__username', 'message', 'feedback_type')  # Add search functionality
+
+    # Method to display a shortened version of the message
+    def short_message(self, obj):
+        return obj.message[:50] + "..." if len(obj.message) > 50 else obj.message
+    short_message.short_description = 'Message Preview'
+
+# Register the Feedback model and admin
+admin.site.register(Feedback, LaundryFeedbackAdmin)
 
 
-# Register all models with the admin
+
+
+
+
 admin.site.register(LaundryOrders, LaundryOrderAdmin)
 admin.site.register(laundry_Membership, LaundryMembershipAdmin)
 admin.site.register(laundry_Payments, LaundryPaymentsAdmin)
