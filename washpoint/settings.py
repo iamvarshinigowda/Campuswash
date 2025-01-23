@@ -73,12 +73,12 @@ TEMPLATES = [
 WSGI_APPLICATION = 'washpoint.wsgi.application'
 
 
-# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-# EMAIL_HOST = 'smtp.gmail.com'
-# EMAIL_PORT = 587
-# EMAIL_USE_TLS = True
-# EMAIL_HOST_USER = 'iamvarshinigowda@gmail.com'  # Replace with your email
-# EMAIL_HOST_PASSWORD = 'diko jeyd hjus daov'  # Replace with your email password
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'  # Gmail SMTP server
+EMAIL_PORT = 587  # Port for TLS
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'iamvarshinigowda@gmail.com'  # Replace with your email
+EMAIL_HOST_PASSWORD = 'enjy bodv hkrs mtqo'  # Replace with your email password
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
@@ -124,12 +124,12 @@ USE_I18N = True
 USE_TZ = True
 
 
-# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-# EMAIL_HOST = 'smtp.gmail.com'
-# EMAIL_PORT = 587
-# EMAIL_USE_TLS = True
-# EMAIL_HOST_USER = 'iamvarshinigowda'  # Your Gmail address
-# EMAIL_HOST_PASSWORD = 'your_app_password'  # App-specific password
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'iamvarshinigowda@gmail.com'  # Your Gmail address
+EMAIL_HOST_PASSWORD = 'diko jeyd hjus daov'  # App-specific password
 
 
 # Static files (CSS, JavaScript, Images)

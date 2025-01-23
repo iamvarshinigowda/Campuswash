@@ -1,7 +1,8 @@
+from datetime import timezone
 from django.contrib import admin
 from .models import LaundryOrders, laundry_Membership, laundry_Payments, ExtraService
 
-
+from .utils import send_status_update_email
 # Admin for Laundry Orders
 class LaundryOrderAdmin(admin.ModelAdmin):
     list_display = ('laundry_id', 'user', 'membership', 'clothes_count', 'check_in_date', 'check_in_time', 'status', 'check_out_date')
@@ -19,7 +20,15 @@ class LaundryOrderAdmin(admin.ModelAdmin):
 
     mark_as_completed.short_description = "Mark selected orders as Completed"
     mark_as_in_progress.short_description = "Mark selected orders as In Progress"
- 
+    def save_model(self, request, obj, form, change):
+        if change:  # Check if the record is being updated
+            previous_status = LaundryOrders.objects.get(laundry_id=obj.laundry_id).status
+            if previous_status != 'Done' and obj.status == 'Done':  # Check for status change
+                send_status_update_email(obj.user.email, obj.laundry_id)
+        super().save_model(request, obj, form, change)
+
+
+
 
 # Admin for Laundry Memberships
 class LaundryMembershipAdmin(admin.ModelAdmin):
