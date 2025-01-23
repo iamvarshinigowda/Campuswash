@@ -42,7 +42,7 @@ def user_login(request):
     else:
         return render(request, 'authenticate/login.html')
 
-# @login_required(login_url='login')from django.shortcuts import render
+# @login_required(login_url='login')from django.shortcuts impor.t render
 
 def home(request):
     return render(request, 'user/home.html')  # Replace 'home.html' with the correct template

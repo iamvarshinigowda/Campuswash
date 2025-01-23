@@ -1,6 +1,7 @@
 from django.contrib import admin
 from .models import LaundryOrders, laundry_Membership, laundry_Payments, ExtraService
 
+
 # Admin for Laundry Orders
 class LaundryOrderAdmin(admin.ModelAdmin):
     list_display = ('laundry_id', 'user', 'membership', 'clothes_count', 'check_in_date', 'check_in_time', 'status', 'check_out_date')
@@ -18,7 +19,7 @@ class LaundryOrderAdmin(admin.ModelAdmin):
 
     mark_as_completed.short_description = "Mark selected orders as Completed"
     mark_as_in_progress.short_description = "Mark selected orders as In Progress"
-
+ 
 
 # Admin for Laundry Memberships
 class LaundryMembershipAdmin(admin.ModelAdmin):

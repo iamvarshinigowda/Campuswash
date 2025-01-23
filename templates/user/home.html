@@ -55,7 +55,7 @@
   <div class="container">
     <nav class="navbar navbar-expand-lg navbar-light bg-white">
       <a class="navbar-brand text-dark" href="#">
-        Logo
+        <h6 style="color: blue;">Campus Wash Point</h6>
       </a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
@@ -182,22 +182,23 @@
       </div>
       <div class="col-md-3">
         <div class="card">
-          <img src="{% static 'images/dryclean.jpg' %}" class="card-img-top" alt="Service 2">
+        <a href="{% url 'extraservice' %}">"
+          <img src="{% static 'images/dryclean.jpg' %}" class="card-img-top" alt="Service 2"></a>
           <div class="card-body">
             <h5 class="card-title">Dry Clean</h5>
             <p class="card-text">For your delicate fabrics, we offer dry cleaning services that ensure your clothes remain as good as new.</p>
-            <a href="#" class="btn btn-primary">Read More</a>
+            <a href="{% url 'extraservice' %}" class="btn btn-primary">Read More</a>
           </div>
         </div>
       </div>
       <div class="col-md-3">
         <div class="card">
-          <a href="https://www.flipkart.com/q/folding-bed" ><img src="{% static 'images/folding.jpg' %}" class="card-img-top" alt="Service 2"></a>
+          <a href="{% url 'extraservice' %}" ><img src="{% static 'images/folding.jpg' %}" class="card-img-top" alt="Service 2"></a>
           <div class="card-body">
             <h5 class="card-title">Foldings</h5>
             <p class="card-text">We take care of folding your clothes neatly, saving you valuable time and ensuring everything is organized.
 </p>
-            <a href="#" class="btn btn-primary">Read More</a>
+            <a href="{% url 'extraservice' %}" class="btn btn-primary">Read More</a>
           </div>
         </div>
       </div>
